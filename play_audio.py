@@ -4,7 +4,7 @@ import wave
 
 chunk = 1024
 
-wf = wave.open(r".\Recording.wav", 'rb')
+wf = wave.open(r".\.wav", 'rb')
 
 p = pyaudio.PyAudio()
 
@@ -13,13 +13,16 @@ stream = p.open(format = p.get_format_from_width(wf.getsampwidth()),
                 channels = wf.getnchannels(),
                 rate = wf.getframerate(),
                 output = True)
-
+#读取数据
+data = wf.readframes(chunk)
 # 写声音输出流进行播放
-while True:
-    data = wf.readframes(chunk)
-    if data == "": break
+while data !=b'':
     stream.write(data)
-    print(1)
+    data = wf.readframes(chunk)
+    print(...)
 
+#停止数据流
+stream.stop_stream()
 stream.close()
 p.terminate()
+print('播放结束')

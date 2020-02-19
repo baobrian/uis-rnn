@@ -65,7 +65,7 @@ def diarization_experiment(model_args, training_args, inference_args):
     print(test_cluster_id)
     print('Predicted labels:')
     print(predicted_cluster_id)
-    print('-' * 80)
+    print('-' * 100)
 
   output_string = uisrnn.output_result(model_args, training_args, test_record)
 

@@ -15,7 +15,7 @@
 
 import argparse
 
-_DEFAULT_OBSERVATION_DIM = 256
+_DEFAULT_OBSERVATION_DIM = 2560
 
 
 def str2bool(value):
