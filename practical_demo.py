@@ -23,7 +23,7 @@ def process_wavedata(filepath=None,window_wide=2000):
     result=pd.DataFrame()
     sound_martrix=np.empty(shape=(len(sound_files),220160),dtype=np.short)
     for i,file in enumerate(sound_files):
-        name_index.append(file.replace('.wav',''))
+        name_index.append(file.replace('.wav','')[0:18])
         wf = wave.open(file,'rb')
         print('-'*100)
         print(file)
@@ -48,13 +48,13 @@ def process_wavedata(filepath=None,window_wide=2000):
         window_length=math.floor((len(temp)-window_wide)/(window_wide/2))
         inner_martrix = np.empty(shape=(window_length, window_wide))
         for j in range(0,window_length):
-            print((j*(window_wide/2)),(j*(window_wide/2)+window_wide-1))
-            inner_martrix[j]=temp[0:1999]
-            inner_martrix[j]=temp[int((j*(window_wide/2))):int((j*(window_wide/2)+window_wide-1))]
+            print((j*(window_wide/2)),(j*(window_wide/2)+window_wide))
+            inner_martrix[j]=temp[int((j*(window_wide/2))):int((j*(window_wide/2)+window_wide))]
         df=pd.DataFrame(data=inner_martrix)
         df['speaker_key']=name_index[i]+'_'+str(i)
         df['group']=i
         result=result.append(df)
+    result.to_csv(r'E:\Data_temp\records\result.csv',header=True,index=False)
     return result
 
 
@@ -90,10 +90,11 @@ def predict():
 
 def main():
     model_args, training_args, inference_args = uisrnn.parse_arguments()
-    df=process_wavedata(filepath=r'E:\Data_temp\records\20200117141002\\',window_wide=2560)
+    # df=process_wavedata(filepath=r'E:\Data_temp\records\20200117141002\\',window_wide=2000)
+    df=pd.read_csv(r'E:\Data_temp\records\result.csv')
     # train_data.to_csv('audio_tran.csv')
-    train_data = df.drop(columns=['speaker','group'])
-    train_cluster_id = df['speaker']
+    train_data = df.drop(columns=['speaker_key','group'])
+    train_cluster_id = df['speaker_key']
     X_train, X_test, Y_train, Y_test=train_test_split(train_data,train_cluster_id,test_size=0.33, random_state=42)
     train_cluster_id = Y_train.values
     train_sequence = X_train.values
