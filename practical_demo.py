@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 
 
 
-SAVED_MODEL_NAME = 'speaker_recognition_model.uisrnn'
+SAVED_MODEL_NAME = 'test_recognition_model.uisrnn'
 
 # 取真实数据，将Wave音频格式的数据转换成可以处理的数字化数据
 
