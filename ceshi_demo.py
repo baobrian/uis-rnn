@@ -138,7 +138,7 @@ def main():
 
     # run testing
     predicted_label = model.predict(test_sequence, inference_args)
-
+    print(predicted_label)
     # run evaluation
     model.logger.print(
         3, 'Asserting the equivalence between'
@@ -146,6 +146,7 @@ def main():
             test_cluster_id, predicted_label))
     accuracy = uisrnn.compute_sequence_match_accuracy(
         predicted_label, test_cluster_id)
+    print(accuracy)
 
 
 
