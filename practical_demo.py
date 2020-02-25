@@ -11,11 +11,11 @@ from sklearn.model_selection import train_test_split
 
 
 
-SAVED_MODEL_NAME = 'speaker_recognition_model.uisrnn'
+SAVED_MODEL_NAME = 'test_recognition_model.uisrnn'
 
 # 取真实数据，将Wave音频格式的数据转换成可以处理的数字化数据
 
-def process_wavedata(filepath=None,window_wide=256):
+def process_wavedata(filepath=None,window_wide=2000):
     # os.chdir(r'E:\uis-rnn\records\\')
     os.chdir(filepath)
     sound_files=os.listdir(filepath)
@@ -23,7 +23,7 @@ def process_wavedata(filepath=None,window_wide=256):
     result=pd.DataFrame()
     sound_martrix=np.empty(shape=(len(sound_files),220160),dtype=np.short)
     for i,file in enumerate(sound_files):
-        name_index.append(file.replace('.wav',''))
+        name_index.append(file.replace('.wav','')[0:18])
         wf = wave.open(file,'rb')
         print('-'*100)
         print(file)
@@ -40,18 +40,36 @@ def process_wavedata(filepath=None,window_wide=256):
         # 将波形数据转换成数组
         wave_data = np.fromstring(str_data, dtype=np.short)
         # 将wave_data数组改为2列，行数自动匹配
-        wave_data.shape = -1, 2
+        #wave_data.shape = -1, 2
         # 将数组转置
-        wave_data = wave_data.T
-        temp=wave_data[0]
-        inner_martrix = np.empty(shape=(math.floor(len(temp)/window_wide), window_wide))
-        for j in range(0,math.floor(len(temp)/window_wide)):
-            inner_martrix[j]=temp[j*window_wide:(j+1)*window_wide]
+        # wave_data = wave_data.T
+        # temp=wave_data[0]
+        temp=wave_data.T
+        window_length=math.floor((len(temp)-window_wide)/(window_wide/2))
+        inner_martrix = np.empty(shape=(window_length, window_wide))
+        for j in range(0,window_length):
+            print((j*(window_wide/2)),(j*(window_wide/2)+window_wide))
+            inner_martrix[j]=temp[int((j*(window_wide/2))):int((j*(window_wide/2)+window_wide))]
         df=pd.DataFrame(data=inner_martrix)
-        df['speaker']=name_index[i]+'_'+str(i)
+        df['speaker_key']=name_index[i]+'_'+str(i)
         df['group']=i
         result=result.append(df)
+    result.to_csv(r'E:\Data_temp\records\result.csv',header=True,index=False)
     return result
+
+
+def collect_data(filepath=None):
+    os.chdir(filepath)
+    return
+
+
+
+
+
+
+
+
+
 
 
 
@@ -72,10 +90,11 @@ def predict():
 
 def main():
     model_args, training_args, inference_args = uisrnn.parse_arguments()
-    df=process_wavedata(filepath=r'E:\uis-rnn\records\\',window_wide=2560)
+    # df=process_wavedata(filepath=r'E:\Data_temp\records\20200117141002\\',window_wide=2000)
+    df=pd.read_csv(r'E:\Data_temp\records\result.csv')
     # train_data.to_csv('audio_tran.csv')
-    train_data = df.drop(columns=['speaker','group'])
-    train_cluster_id = df['speaker']
+    train_data = df.drop(columns=['speaker_key','group'])
+    train_cluster_id = df['speaker_key']
     X_train, X_test, Y_train, Y_test=train_test_split(train_data,train_cluster_id,test_size=0.33, random_state=42)
     train_cluster_id = Y_train.values
     train_sequence = X_train.values
