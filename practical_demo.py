@@ -90,7 +90,7 @@ def predict():
 
 def main():
     model_args, training_args, inference_args = uisrnn.parse_arguments()
-    # df=process_wavedata(filepath=r'E:\Data_temp\records\20200117141002\\',window_wide=2000)
+    df=process_wavedata(filepath=r'E:\Data_temp\records\20200117141002\\',window_wide=2000)
     df=pd.read_csv(r'E:\Data_temp\records\result.csv')
     # train_data.to_csv('audio_tran.csv')
     train_data = df.drop(columns=['speaker_key','group'])
