@@ -1,5 +1,6 @@
 # coding=utf-8
 import os
+import sys
 import numpy as np
 from pyaudio import PyAudio
 import wave
@@ -51,10 +52,10 @@ def process_wavedata(filepath=None,window_wide=2000):
             print((j*(window_wide/2)),(j*(window_wide/2)+window_wide))
             inner_martrix[j]=temp[int((j*(window_wide/2))):int((j*(window_wide/2)+window_wide))]
         df=pd.DataFrame(data=inner_martrix)
-        df['speaker_key']=name_index[i]+'_'+str(i)
+        df['speaker_key']=name_index[i]
         df['group']=i
         result=result.append(df)
-    result.to_csv(r'E:\Data_temp\records\result.csv',header=True,index=False)
+    result.to_csv(r'E:\Data_temp\records\zhenren.csv',header=True,index=False)
     return result
 
 
@@ -90,8 +91,9 @@ def predict():
 
 def main():
     model_args, training_args, inference_args = uisrnn.parse_arguments()
-    df=process_wavedata(filepath=r'E:\Data_temp\records\20200117141002\\',window_wide=2000)
-    df=pd.read_csv(r'E:\Data_temp\records\result.csv')
+    df=process_wavedata(filepath=r'E:\uis-rnn\records',window_wide=2000)
+    sys.exit()
+    # df=pd.read_csv(r'E:\Data_temp\records\result.csv')
     # train_data.to_csv('audio_tran.csv')
     train_data = df.drop(columns=['speaker_key','group'])
     train_cluster_id = df['speaker_key']
